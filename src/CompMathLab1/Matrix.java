@@ -15,6 +15,7 @@ public class Matrix {
     public Matrix (int[][] unknown, int[] solutions){
         this.A = unknown;
         this.B = solutions;
+        isValid();
     }
 
     private int[][] createRandomMatrix(int range) {
@@ -35,5 +36,31 @@ public class Matrix {
             vector[i] = random.nextInt(range * 2) + (-range);
         }
         return vector;
+    }
+
+    public int[][] getA() {
+        return A;
+    }
+
+    public int[] getB() {
+        return B;
+    }
+
+    public boolean isSquare (){
+        int rows = A.length;
+        int columns = A[0].length;
+        return rows == columns;
+    }
+
+    private void isValid (){
+        if (A.length == 0){
+            throw new IllegalArgumentException("Matrix cannot be empty");
+        }
+        int columnLen = A[0].length;
+        for (int[] columns : A) {
+            if (columns.length != columnLen) {
+                throw new IllegalArgumentException("Columns in matrix must be same");
+            }
+        }
     }
 }
