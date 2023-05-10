@@ -1,10 +1,11 @@
 package CompMathLab1;
 
 import java.util.Random;
+import java.util.Arrays;
 
 public class Matrix {
-    int[][] A;
-    int[] B;
+    double[][] A;
+    double[] B;
     private final int RANDOM_SIZE = 20;
 
     public Matrix() {
@@ -12,25 +13,28 @@ public class Matrix {
         this.A = createRandomMatrix(range);
         this.B = createRandomVector(range);
     }
-    public Matrix (int[][] unknown, int[] solutions){
+    public Matrix (double[][] unknown, double[] solutions){
         this.A = unknown;
         this.B = solutions;
         isValid();
     }
 
-    private int[][] createRandomMatrix(int range) {
-        int[][] matrix = new int[RANDOM_SIZE][RANDOM_SIZE];
+    private double[][] createRandomMatrix(int range) {
+        double[][] matrix = new double[RANDOM_SIZE][RANDOM_SIZE];
         Random random = new Random();
         for (int i = 0; i < RANDOM_SIZE; i++) {
             for (int j = 0; j < RANDOM_SIZE; j++) {
-                matrix[i][j] = random.nextInt(range * 2) + (-range);
+                matrix[i][j] = random.nextDouble(range * 2) + (-range);
             }
+        }
+        for (int i = 0; i < RANDOM_SIZE; i++) {
+            matrix[i][i] = Arrays.stream(matrix[i]).map(Math::abs).sum() * random.nextInt(2, 4);
         }
         return matrix;
     }
 
-    private int[] createRandomVector(int range){
-        int[] vector = new int[RANDOM_SIZE];
+    private double[] createRandomVector(int range){
+        double[] vector = new double[RANDOM_SIZE];
         Random random = new Random();
         for (int i = 0; i  < vector.length; i++) {
             vector[i] = random.nextInt(range * 2) + (-range);
@@ -38,17 +42,17 @@ public class Matrix {
         return vector;
     }
 
-    public int[][] getA() {
+    public double[][] getA() {
         return A;
     }
 
-    public int[] getB() {
+    public double[] getB() {
         return B;
     }
 
     public boolean isSquare (){
-        int rows = A.length;
-        int columns = A[0].length;
+        double rows = A.length;
+        double columns = A[0].length;
         return rows == columns;
     }
 
@@ -57,7 +61,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix cannot be empty");
         }
         int columnLen = A[0].length;
-        for (int[] columns : A) {
+        for (double[] columns : A) {
             if (columns.length != columnLen) {
                 throw new IllegalArgumentException("Columns in matrix must be same");
             }
