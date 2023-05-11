@@ -1,5 +1,6 @@
 package CompMathLab1;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Arrays;
 
@@ -37,7 +38,7 @@ public class Matrix {
         double[] vector = new double[RANDOM_SIZE];
         Random random = new Random();
         for (int i = 0; i  < vector.length; i++) {
-            vector[i] = random.nextInt(range * 2) + (-range);
+            vector[i] = random.nextDouble(range * 2) + (-range);
         }
         return vector;
     }
@@ -65,6 +66,22 @@ public class Matrix {
             if (columns.length != columnLen) {
                 throw new IllegalArgumentException("Columns in matrix must be same");
             }
+        }
+    }
+
+    public void printMatrix (){
+        for (double[] row: A) {
+            StringBuilder rowS = new StringBuilder();
+            for (double el: row) {
+                String newel = new DecimalFormat("#0.000").format(el);
+                rowS.append(newel).append(" ");
+            }
+            System.out.println(rowS);
+        }
+
+        for (double el: B) {
+            String newel = new DecimalFormat("#0.000").format(el);
+            System.out.println(newel);
         }
     }
 }
