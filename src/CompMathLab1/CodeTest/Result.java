@@ -15,9 +15,9 @@ public class Result {
             double A = matrix.get(i).get(i);
             double last = matrix.get(i).get(n);
 
-            if (Math.abs(A) < Math.abs(matrix.get(i).stream()
+            if (Math.abs(A) < matrix.get(i).stream()
                     .map(Math::abs)
-                    .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(A))) {
+                    .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(A)) {
 
                 List<Double> row = matrix.get(i);
                 //Trying to find numbers to solve diagonal predominance problem
@@ -25,9 +25,9 @@ public class Result {
                 for (int j = 0; j < n; j++) {
                     double B = row.get(j);
                     if(B != A){
-                        if (Math.abs(B) >= Math.abs(row.stream()
+                        if (Math.abs(B) >= row.stream()
                                 .map(Math::abs)
-                                .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(B))) {
+                                .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(B)) {
                             swap(row, i, j);
                             matrix.set(i, row);
                             foundSolution = true;
