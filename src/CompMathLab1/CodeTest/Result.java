@@ -27,7 +27,7 @@ public class Result {
                     if(B != A){
                         if (Math.abs(B) >= Math.abs(row.stream()
                                 .map(Math::abs)
-                                .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(A))) {
+                                .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(B))) {
                             swap(row, i, j);
                             matrix.set(i, row);
                             foundSolution = true;
@@ -57,7 +57,7 @@ public class Result {
                 double denominator = matrix.get(i).get(i); //retrieve diagonal number
                 for (int j = 0; j < n; j++)
                     if (j != i)
-                        numerator -= matrix.get(i).get(j) * solutionVector.get(i);
+                        numerator -= matrix.get(i).get(j) * solutionVector.get(j);
                 solutionVector.set(i, numerator / denominator);
             }
             ++itterations;
