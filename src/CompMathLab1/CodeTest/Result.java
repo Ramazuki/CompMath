@@ -7,6 +7,7 @@ import java.util.List;
 public class Result {
     public static boolean isMethodApplicable = true;
     public static String errorMessage;
+    static int iterations = 0;
 
     public static void ruleCheck (int n, List<List<Double>> matrix){
         matrixCheck(n, matrix);
@@ -22,6 +23,15 @@ public class Result {
             if (curRowSize != expectedRowSize) {
                 isMethodApplicable = false;
                 break;
+            }
+        }
+        if(isMethodApplicable) {
+            for (int i = 0; i < n; i++) {
+                double b = matrix.get(i).get(n);
+                if (matrix.get(i).stream()
+                        .reduce(0.0, Double::sum) - b == 0 && b != 0) {
+                    isMethodApplicable = false;
+                }
             }
         }
     }
@@ -57,31 +67,33 @@ public class Result {
         }
     }
 
-    public static List<Double> solveByGaussSeidel (int n, List<List<Double>> matrix, double epsilon){
+    public static List<Double> solveByGaussSeidel (int n, List<List<Double>> matrix, double epsilon) {
         ruleCheck(n, matrix);
         int b_place = n;
         List<Double> solutionVector = new ArrayList<>(Collections.nCopies(n, 0.0));
         List<Double> previous = new ArrayList<>(solutionVector);
         List<Double> errors = new ArrayList<>(solutionVector);
-        int itterations = 0;
+
 
         while (true) {
             for (int i = 0; i < n; i++) {
                 double numerator = matrix.get(i).get(b_place); //retrieve number after "="
                 double denominator = matrix.get(i).get(i); //retrieve diagonal number
                 for (int j = 0; j < n; j++)
-                    if (j != i)
+                   if (j != i)
                         numerator -= matrix.get(i).get(j) * solutionVector.get(j);
+
+
                 solutionVector.set(i, numerator / denominator);
             }
-            ++itterations;
-            if(itterations == 1)
+            ++iterations;
+            if(iterations == 1)
                 continue;
             boolean isOver = true;
             for (int i = 0; i < n; i++) {
                 double error = Math.abs(solutionVector.get(i) - previous.get(i)) / Math.abs(solutionVector.get(i));
                 errors.set(i, error);
-                if(errors.get(i) > epsilon){
+                if(error > epsilon){
                     isOver = false;
                 }
             }
@@ -91,7 +103,7 @@ public class Result {
         }
         List<Double> joinedVector = new ArrayList<>(solutionVector);
         joinedVector.addAll(errors);
-        System.out.println("iterations: " + itterations);
+        System.out.println("iterations: " + iterations);
         return joinedVector;
     }
 
