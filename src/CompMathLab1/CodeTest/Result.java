@@ -103,7 +103,7 @@ public class Result {
         }
         List<Double> joinedVector = new ArrayList<>(solutionVector);
         joinedVector.addAll(errors);
-        System.out.println("iterations: " + iterations);
+        System.out.println("Iterations: " + iterations);
         return joinedVector;
     }
 

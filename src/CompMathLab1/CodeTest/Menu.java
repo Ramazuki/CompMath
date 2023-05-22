@@ -1,6 +1,7 @@
 package CompMathLab1.CodeTest;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,7 +9,6 @@ import java.util.stream.*;
 
 import static CompMathLab1.CodeTest.Result.iterations;
 import static CompMathLab1.CodeTest.Result.solveByGaussSeidel;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 
@@ -50,18 +50,18 @@ public class Menu {
     }
 
     public static void export(List<Double> toWrite, boolean exportInFile) throws IOException {
+        int length = toWrite.size();
         if (exportInFile) {
             String fileName = "./src/CompMathLab1/CodeTest/files/result.txt";
             File file = new File(fileName);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
             bufferedWriter.write("Iterations: " + iterations + "\n");
             if (Result.isMethodApplicable){
-                bufferedWriter.write(
-                        toWrite.stream()
-                                .map(Object::toString)
-                                .collect(joining("\n"))
-                                + "\n"
-                );
+                for (int i = 0; i < length / 2; i++) {
+                    String x = new DecimalFormat("#.#####").format(toWrite.get(i));
+                    String eps = new DecimalFormat("#.#####").format(toWrite.get(i+(length / 2)));
+                    bufferedWriter.write("x" + (i+1) + ": " + x + "| err: " + eps + "\n");
+                }
             } else {
                 bufferedWriter.write(Result.errorMessage + "\n");
             }
@@ -69,18 +69,15 @@ public class Menu {
 
         }
         else {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(System.out));
             if (Result.isMethodApplicable){
-                bufferedWriter.write(
-                        toWrite.stream()
-                                .map(Object::toString)
-                                .collect(joining("\n"))
-                                + "\n"
-                );
+                for (int i = 0; i < length / 2; i++) {
+                    String x = new DecimalFormat("#.#####").format(toWrite.get(i));
+                    String eps = new DecimalFormat("#.#####").format(toWrite.get(i+(length / 2)));
+                    System.out.println("x" + (i+1) + ": " + x + "| err: " + eps);
+                }
             } else {
-                bufferedWriter.write(Result.errorMessage + "\n");
+                System.out.println(Result.errorMessage + "\n");
             }
-            bufferedWriter.close();
         }
     }
 
@@ -88,11 +85,13 @@ public class Menu {
         System.out.print("Введите размерность матрицы >> ");
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
         int matrixRows = Integer.parseInt(consoleReader.readLine().trim());
-        System.out.println("Введите матрицу в следующем виде:\n" +
-                "a_11 a_12 ... a_1n b_1\n" +
-                "a_21 a_22 ... a_2n b_2\n" +
-                ".\n.\n" +
-                "a_n1 a_n2 ... a_nn b_n");
+        System.out.println("""
+                Введите матрицу в следующем виде:
+                a_11 a_12 ... a_1n b_1
+                a_21 a_22 ... a_2n b_2
+                .
+                .
+                a_n1 a_n2 ... a_nn b_n""");
 
         //noinspection DuplicatedCode
         IntStream.range(0, matrixRows).forEach(i -> {
