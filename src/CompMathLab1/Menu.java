@@ -1,14 +1,12 @@
-package CompMathLab1.CodeTest;
+package CompMathLab1;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.*;
 
-import static CompMathLab1.CodeTest.Result.iterations;
-import static CompMathLab1.CodeTest.Result.solveByGaussSeidel;
+import static CompMathLab1.Solution.*;
 import static java.util.stream.Collectors.toList;
 
 
@@ -56,27 +54,28 @@ public class Menu {
             File file = new File(fileName);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
             bufferedWriter.write("Iterations: " + iterations + "\n");
-            if (Result.isMethodApplicable){
+            if (Solution.isMethodApplicable){
                 for (int i = 0; i < length / 2; i++) {
-                    String x = new DecimalFormat("#.#####").format(toWrite.get(i));
-                    String eps = new DecimalFormat("#.#####").format(toWrite.get(i+(length / 2)));
+                    double x = toWrite.get(i);
+                    double eps = toWrite.get(i+(length / 2));
                     bufferedWriter.write("x" + (i+1) + ": " + x + "| err: " + eps + "\n");
                 }
             } else {
-                bufferedWriter.write(Result.errorMessage + "\n");
+                bufferedWriter.write(Solution.errorMessage + "\n");
             }
             bufferedWriter.close();
 
         }
         else {
-            if (Result.isMethodApplicable){
+            if (isMethodApplicable){
+                System.out.println("Iterations: " + iterations);
                 for (int i = 0; i < length / 2; i++) {
-                    String x = new DecimalFormat("#.#####").format(toWrite.get(i));
-                    String eps = new DecimalFormat("#.#####").format(toWrite.get(i+(length / 2)));
+                    double x = toWrite.get(i);
+                    double eps = toWrite.get(i+(length / 2));
                     System.out.println("x" + (i+1) + ": " + x + "| err: " + eps);
                 }
             } else {
-                System.out.println(Result.errorMessage + "\n");
+                System.out.println(errorMessage + "\n");
             }
         }
     }
@@ -106,9 +105,11 @@ public class Menu {
                 throw new RuntimeException(ex);
             }
         });
-
-        System.out.print("Введите значение максимальной погрешности >> ");
-        epsilon = Double.parseDouble(consoleReader.readLine().trim());
+        ruleCheck(matrixRows, matrix);
+        if(isMethodApplicable) {
+            System.out.print("Введите значение максимальной погрешности >> ");
+            epsilon = Double.parseDouble(consoleReader.readLine().trim());
+        }
         consoleReader.close();
     }
     private static void readFromFile() throws IOException{
@@ -134,9 +135,11 @@ public class Menu {
                throw new RuntimeException(ex);
            }
         });
-
-        epsilon = Double.parseDouble(fileReader.readLine().trim());
-        fileReader.close();
+        ruleCheck(matrixRows, matrix);
+        if(isMethodApplicable) {
+            epsilon = Double.parseDouble(fileReader.readLine().trim());
+            fileReader.close();
+        }
     }
 
     private static void createRandom() {

@@ -1,41 +1,66 @@
-package CompMathLab1.CodeTest;
+package CompMathLab1;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Result {
+public class Solution {
     public static boolean isMethodApplicable = true;
     public static String errorMessage;
     static int iterations = 0;
 
     public static void ruleCheck (int n, List<List<Double>> matrix){
-        matrixCheck(n, matrix);
+        strangeEqualityCheck(n, matrix);
+        zeroCheck(n, matrix);
         if(isMethodApplicable)
             diagonalCheck(n, matrix);
     }
 
-    public static void matrixCheck(int n, List<List<Double>> matrix){
-        errorMessage = "Input data cannot be considered as matrix";
-        int expectedRowSize = matrix.get(0).size();
-        for (int i = 1; i < n; i++) {
-            int curRowSize = matrix.get(i).size();
-            if (curRowSize != expectedRowSize) {
+    private static void zeroCheck(int n, List<List<Double>> matrix){
+        //check if all a_n are zeroes
+        if(!isMethodApplicable)
+            return;
+        for (int i = 0; i < n; i++) {
+            double b1 = matrix.get(i).get(n);
+            if (matrix.get(i).stream()
+                    .reduce(0.0, Double::sum) - b1 == 0 && b1 != 0) {
+                errorMessage = "Подобное СЛАУ не может быть решено";
                 isMethodApplicable = false;
-                break;
-            }
-        }
-        if(isMethodApplicable) {
-            for (int i = 0; i < n; i++) {
-                double b = matrix.get(i).get(n);
-                if (matrix.get(i).stream()
-                        .reduce(0.0, Double::sum) - b == 0 && b != 0) {
-                    isMethodApplicable = false;
-                }
             }
         }
     }
-    public static void diagonalCheck (int n, List<List<Double>> matrix){
+
+    private static void strangeEqualityCheck(int n, List<List<Double>> matrix){
+        for (int i = 0; i < n-1; i++) {
+            for (int j = i+1; j < n; j++) {
+                List<Double> rowI = new ArrayList<>(matrix.get(i));
+                double b1 = rowI.get(n);
+                rowI.remove(n);
+                List<Double> rowJ = new ArrayList<>(matrix.get(j));
+                double b2 = rowJ.get(n);
+                rowJ.remove(n);
+
+                if (rowI.equals(rowJ) && b1 != b2){
+                    isMethodApplicable = false;
+                    errorMessage = "Подобное СЛАУ не может быть решено";
+                    break;
+                }
+            }
+        }
+
+
+    }
+
+    private static void columnSwap (List<List<Double>> matrix, int index1, int index2){
+            int length = matrix.size();
+        for (int i = 0; i < length; i++) {
+            List<Double> row = new ArrayList<>(matrix.get(i));
+            Collections.swap(row, index1, index2);
+            matrix.set(i, row);
+        }
+    }
+
+    private static void diagonalCheck (int n, List<List<Double>> matrix){
         for (int i = 0; i < n; i++) {
             double A = matrix.get(i).get(i);
             double last = matrix.get(i).get(n);
@@ -43,24 +68,23 @@ public class Result {
             if (Math.abs(A) < matrix.get(i).stream()
                     .map(Math::abs)
                     .reduce(0.0, Double::sum) - Math.abs(last) - Math.abs(A)) {
-
                 List<Double> row = matrix.get(i);
-                //Trying to find numbers to solve diagonal predominance problem
-                boolean foundSolution = false;
                 row.remove(n);
-                double B = Collections.max(row);
+                double max = Collections.max(row);
                 row.add(last);
-                if(B != A && Math.abs(B) >= row.stream()
+                int maxIndex = row.indexOf(max);
+                boolean foundSolution = false;
+
+                if(max != A && maxIndex > i && Math.abs(max) >= row.stream()
                         .map(Math::abs)
-                        .reduce(0.0, Double::sum) - Math.abs(B) - Math.abs(last)) {
-                    int index = row.indexOf(B);
-                    Collections.swap(row, i, index);
-                    matrix.set(i, row);
+                        .reduce(0.0, Double::sum) - Math.abs(max) - Math.abs(last)) {
+                    columnSwap(matrix, i, maxIndex);
                     foundSolution = true;
                 }
+
                 if (!foundSolution) {
                     isMethodApplicable = false;
-                    errorMessage = "The system has no diagonal dominance for this method. Method of the Gauss-Seidel is not applicable.";
+                    errorMessage = "Не соблюдено условие диагонального преобладания";
                     break;
                 }
             }
@@ -68,9 +92,10 @@ public class Result {
     }
 
     public static List<Double> solveByGaussSeidel (int n, List<List<Double>> matrix, double epsilon) {
-        ruleCheck(n, matrix);
         int b_place = n;
         List<Double> solutionVector = new ArrayList<>(Collections.nCopies(n, 0.0));
+        if(!isMethodApplicable)
+            return solutionVector;
         List<Double> previous = new ArrayList<>(solutionVector);
         List<Double> errors = new ArrayList<>(solutionVector);
 
@@ -91,7 +116,7 @@ public class Result {
                 continue;
             boolean isOver = true;
             for (int i = 0; i < n; i++) {
-                double error = Math.abs(solutionVector.get(i) - previous.get(i)) / Math.abs(solutionVector.get(i));
+                double error = Math.abs(solutionVector.get(i) - previous.get(i));
                 errors.set(i, error);
                 if(error > epsilon){
                     isOver = false;
@@ -103,7 +128,6 @@ public class Result {
         }
         List<Double> joinedVector = new ArrayList<>(solutionVector);
         joinedVector.addAll(errors);
-        System.out.println("Iterations: " + iterations);
         return joinedVector;
     }
 
